@@ -6,7 +6,7 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/steel-commerce-platform">
       <App />
     </BrowserRouter>
   </StrictMode>,
