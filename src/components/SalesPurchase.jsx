@@ -30,21 +30,13 @@ const SalesPurchase = () => {
   return (
     <div className="mb-4">
       <div className="flex rounded-lg overflow-hidden shadow-sm">
-        {/* 左侧菜单 */}
-        <div className="w-56 bg-blue-600 text-white relative"
-             style={{
-               backgroundImage: `url('https://img.freepik.com/free-vector/blue-geometric-minimal-background_53876-99573.jpg')`,
-               backgroundSize: 'cover',
-               backgroundPosition: 'center'
-             }}>
-          {/* 半透明蓝色遮罩 */}
-          <div className="absolute inset-0 bg-blue-500 bg-opacity-80"></div>
-          
+        {/* 左侧菜单 - 更浅色背景 */}
+        <div className="w-56 bg-blue-50 text-blue-800 relative">
           {/* 内容区 */}
           <div className="relative z-10 h-full flex flex-col">
-            <div className="py-3 px-4 border-b border-blue-400">
-              <h3 className="text-lg font-bold">采购销售专栏</h3>
-              <div className="text-blue-100 text-xs">
+            <div className="py-3 px-4 border-b border-blue-100">
+              <h3 className="text-lg font-bold text-blue-700">采购销售专栏</h3>
+              <div className="text-blue-500 text-xs">
                 优惠促销价 | 精准高效
               </div>
             </div>
@@ -52,7 +44,7 @@ const SalesPurchase = () => {
             {/* 居中的按钮区域 */}
             <div className="flex-1 flex flex-col justify-center">
               <button 
-                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors ${activeCategory === '采购公告' ? 'bg-blue-700' : 'hover:bg-blue-500 hover:bg-opacity-50'}`}
+                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors ${activeCategory === '采购公告' ? 'bg-blue-100 text-blue-700' : 'hover:bg-blue-100 hover:bg-opacity-50 text-blue-600'}`}
                 onClick={() => setActiveCategory('采购公告')}
               >
                 <div className="flex items-center justify-center">
@@ -63,7 +55,7 @@ const SalesPurchase = () => {
                 </div>
               </button>
               <button 
-                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors ${activeCategory === '销售公告' ? 'bg-blue-700' : 'hover:bg-blue-500 hover:bg-opacity-50'}`}
+                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors ${activeCategory === '销售公告' ? 'bg-blue-100 text-blue-700' : 'hover:bg-blue-100 hover:bg-opacity-50 text-blue-600'}`}
                 onClick={() => setActiveCategory('销售公告')}
               >
                 <div className="flex items-center justify-center">
@@ -106,8 +98,8 @@ const SalesPurchase = () => {
             </div>
           </div>
 
-          {/* 内容列表 */}
-          <div className="p-2">
+          {/* 内容列表 - 紧凑表格布局 */}
+          <div className="px-1 py-1">
             {categoryData.length === 0 ? (
               <div className="py-6 text-center text-gray-500">
                 <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,66 +108,45 @@ const SalesPurchase = () => {
                 <p className="mt-1 text-xs">没有找到相关{activeCategory}信息</p>
               </div>
             ) : (
-              <div>
-                <div className="divide-y divide-gray-100">
-                  {categoryData.slice(0, 5).map((item) => (
-                    <div key={item.id} className="py-1.5 hover:bg-blue-50 transition-colors">
-                      <div className="flex items-center mb-0.5">
-                        <span className={`inline-block px-1.5 py-0.5 text-xs rounded-sm ${
-                          item.isSales ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-700'
-                        }`}>
-                          {item.type}
-                        </span>
-                        {new Date(item.date) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
-                          <span className="ml-1 px-1.5 py-0.5 rounded-sm text-xs font-medium bg-red-100 text-red-700">
-                            NEW
-                          </span>
-                        )}
-                        <span className="ml-auto text-xs text-gray-400">{item.date}</span>
-                      </div>
-                      
-                      <Link 
-                        to={`/announcement-detail/${item.id}`}
-                        className="block text-gray-900 hover:text-blue-600 font-medium text-sm leading-tight"
+              <div className="overflow-hidden">
+                {/* 紧凑表格布局 */}
+                <table className="min-w-full table-fixed text-sm">
+                  <tbody className="divide-y divide-gray-100">
+                    {categoryData.slice(0, 10).map((item) => (
+                      <tr 
+                        key={item.id}
+                        className="hover:bg-blue-50 transition-colors"
                       >
-                        {item.title}
-                      </Link>
-                      
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-xs text-gray-500">
-                        <span className="flex items-center">
-                          <svg className="h-3 w-3 mr-0.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                          {item.company}
-                        </span>
-                        
-                        {item.category && (
+                        <td className="w-14 py-1.5 pr-1">
+                          <span className={`inline-block px-1.5 py-0.5 text-xs rounded-sm whitespace-nowrap ${
+                            item.isSales ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {item.type}
+                          </span>
+                        </td>
+                        <td className="pr-1">
+                          <Link 
+                            to={`/announcement-detail/${item.id}`}
+                            className="block text-gray-900 hover:text-blue-600 font-medium text-sm truncate"
+                          >
+                            {item.title}
+                          </Link>
+                        </td>
+                        <td className="w-24 text-xs text-center whitespace-nowrap">
                           <span className="px-1.5 py-0.5 bg-gray-100 rounded-sm">
                             {item.category}
                           </span>
-                        )}
-                        
-                        {item.quantity && (
-                          <span className="flex items-center">
-                            <svg className="h-3 w-3 mr-0.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                            {item.quantity}
-                          </span>
-                        )}
-                        
-                        {item.price && (
-                          <span className="flex items-center text-red-600 font-medium">
-                            <svg className="h-3 w-3 mr-0.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {item.price}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                        </td>
+                        <td className="w-16 text-xs text-gray-500 whitespace-nowrap">
+                          {item.company.replace('集团', '').replace('有限公司', '')}
+                        </td>
+                        <td className="w-20 text-xs text-gray-400 text-right whitespace-nowrap">
+                          {item.date}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 
                 <div className="mt-1 text-right">
                   <Link 
