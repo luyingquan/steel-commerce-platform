@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { salesPurchaseData } from '../utils/mockData';
 
@@ -8,7 +8,8 @@ const Sales = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [imageLoaded, setImageLoaded] = useState({});
-  const itemsPerPage = 5;
+  const [isMobile] = useOutletContext() || [false];
+  const itemsPerPage = isMobile ? 3 : 5;
 
   // 创建内存中的空白占位图片数据URL
   const placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23cccccc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666666'%3E钢铁产品%3C/text%3E%3C/svg%3E";
@@ -247,65 +248,92 @@ const Sales = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-gray-50 py-8"
+      className="min-h-screen bg-gray-50 py-6"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 顶部大图展示区域 */}
-        <div className="relative rounded-xl overflow-hidden mb-8 shadow-md bg-gradient-to-r from-blue-700 to-blue-900">
-          <img 
-            src="https://img.freepik.com/premium-photo/aerial-view-steel-mill-factory-industrial-zone_93675-129538.jpg" 
-            alt="钢铁工厂" 
-            className="w-full h-64 object-cover opacity-40"
-          />
-          <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
-            <h1 className="text-4xl font-bold mb-2 text-center">钢铁产品销售公告</h1>
-            <p className="text-xl max-w-2xl text-center">
-              提供优质钢材产品，满足各行业需求，价格合理，品质保障
-            </p>
+        {/* 顶部Banner图 */}
+        <div className={`bg-gradient-to-r from-green-800 to-green-600 rounded-lg shadow-md overflow-hidden mb-6`}>
+          <div className={`flex flex-col ${!isMobile ? 'md:flex-row' : ''} items-center`}>
+            <div className={`${isMobile ? 'p-4' : 'md:w-1/2 p-8'}`}>
+              <h2 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-white mb-2 md:mb-4`}>沙钢集团产品销售中心</h2>
+              {!isMobile && (
+                <p className="text-green-100 mb-6">
+                  提供优质钢材产品，规格齐全，品质可靠。沙钢集团作为中国领先的钢铁企业，
+                  致力于为客户提供全方位的钢铁解决方案。
+                </p>
+              )}
+              <Link 
+                to="/register" 
+                className="inline-block bg-white text-green-800 font-medium px-4 py-1.5 md:px-6 md:py-2 rounded-md hover:bg-green-100 transition duration-200"
+              >
+                立即询价
+              </Link>
+            </div>
+            <div className={`${isMobile ? 'w-full p-2' : 'md:w-1/2 p-4'}`}>
+              <div className={`rounded-lg overflow-hidden shadow-lg ${isMobile ? 'h-40' : 'h-64'} relative`}>
+                <img 
+                  src="https://img.freepik.com/free-photo/construction-concept-with-engineering-tools_23-2147768135.jpg?w=740&t=st=1712224916~exp=1712225516~hmac=32bfd2db9dbe26ea2c40e9e25e34f73f7129e20e7a42bc23e49c52909b82afa1" 
+                  alt="钢铁厂全景"
+                  className="w-full h-full object-cover" 
+                  onError={(e) => {
+                    console.log("Banner image failed to load");
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden absolute inset-0 items-center justify-center bg-gray-200">
+                  <span className="text-gray-500">工厂图片加载失败</span>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 md:p-4">
+                  <span className="text-white text-xs md:text-sm">沙钢集团生产基地</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 钢铁产品类别展示 */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="text-xl font-bold text-gray-900">钢铁产品类别</h2>
+        {/* 产品类别 */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+          <div className="border-b border-gray-200 bg-green-50 px-4 md:px-6 py-3 md:py-4">
+            <h2 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-green-900`}>钢铁产品类别</h2>
           </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {steelCategories.map(category => renderCategoryCard(category))}
+          <div className="p-4 md:p-6">
+            <div className={`grid grid-cols-1 ${isMobile ? 'gap-3' : 'md:grid-cols-2 lg:grid-cols-4 gap-4'}`}>
+              {steelCategories.map(renderCategoryCard)}
             </div>
           </div>
         </div>
 
         {/* 热门销售产品 */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="text-xl font-bold text-gray-900">热门销售产品</h2>
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+          <div className="border-b border-gray-200 bg-green-50 px-4 md:px-6 py-3 md:py-4">
+            <h2 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-green-900`}>热门销售产品</h2>
           </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {hotProducts.map(product => renderProductCard(product))}
+          <div className="p-4 md:p-6">
+            <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-3 gap-6'}`}>
+              {hotProducts.map(renderProductCard)}
             </div>
           </div>
         </div>
 
         {/* 销售公告列表 */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="border-b border-gray-200 bg-gradient-to-r from-green-600 to-green-800 px-6 py-4">
-            <h2 className="text-2xl font-bold text-white">销售公告</h2>
-            <p className="mt-1 text-sm text-green-100">
-              查看最新钢铁产品销售信息，把握优质采购机会
+          {/* Header */}
+          <div className="border-b border-gray-200 bg-green-50 px-4 md:px-6 py-3 md:py-4">
+            <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-green-900`}>销售公告</h1>
+            <p className="mt-1 text-xs md:text-sm text-green-600">
+              沙钢集团及下属企业销售信息公示平台
             </p>
           </div>
 
-          {/* 搜索和筛选区域 */}
-          <div className="bg-white px-6 py-4 border-b border-gray-200">
-            <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-              <div className="w-full sm:w-64">
+          {/* Search and filter section */}
+          <div className="bg-white px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
+            <div className={`flex flex-col ${!isMobile ? 'md:flex-row' : ''} justify-between items-center space-y-3 md:space-y-0`}>
+              <div className={`w-full ${!isMobile ? 'md:w-64' : ''}`}>
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="搜索产品名称、类别..."
+                    placeholder="搜索销售公告..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -318,97 +346,94 @@ const Sales = () => {
                 </div>
               </div>
 
-              <div className="flex overflow-x-auto">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`
-                      whitespace-nowrap px-3 py-1 mx-1 rounded-full text-sm font-medium
-                      ${activeSection === section.id
-                        ? 'bg-green-600 text-white'
-                        : 'text-gray-500 hover:bg-gray-100'}
-                    `}
-                  >
-                    {section.name}
-                  </button>
-                ))}
+              <div className="flex overflow-x-auto w-full">
+                <div className={`flex ${isMobile ? 'justify-between w-full' : 'space-x-1'}`}>
+                  {sections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`
+                        whitespace-nowrap px-2 md:px-3 py-1 ${isMobile ? 'mx-0.5 text-xs' : 'mx-1 text-sm'} rounded-md font-medium
+                        ${activeSection === section.id
+                          ? 'bg-green-600 text-white'
+                          : 'text-gray-500 hover:bg-gray-100'}
+                      `}
+                    >
+                      {section.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* 销售公告内容 - 改为水平卡片布局 */}
-          <div className="px-6 py-4">
+          {/* Content */}
+          <div className="overflow-hidden">
             {currentItems.length === 0 ? (
               <div className="text-center py-16">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 md:h-16 md:w-16 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <p className="mt-4 text-gray-500">没有找到相关销售公告</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="divide-y divide-gray-200">
                 {currentItems.map((item) => (
-                  <div 
-                    key={item.id}
-                    className="flex bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
-                  >
-                    <div className="w-28 bg-green-50 flex-shrink-0 flex items-center justify-center p-3 border-r border-gray-200">
-                      <div className="text-center">
-                        <span className="block text-xs font-medium text-gray-500">类型</span>
-                        <span className={`inline-block px-2.5 py-0.5 mt-1 rounded-full text-xs font-medium ${
-                          item.category === '钢材' ? 'bg-blue-100 text-blue-800' :
-                          item.category === '废料' ? 'bg-amber-100 text-amber-800' :
-                          item.category === '备件' ? 'bg-purple-100 text-purple-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {item.category}
-                        </span>
-                        
-                        <div className="mt-3">
-                          <span className="block text-xs font-medium text-gray-500">单位</span>
-                          <span className="text-sm font-medium text-gray-700">{item.company}</span>
+                  <div key={item.id} className={`${isMobile ? 'p-3' : 'p-6'} hover:bg-gray-50`}>
+                    <div className="flex justify-between">
+                      <div className="w-full">
+                        <div className="flex items-center flex-wrap">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md ${isMobile ? 'text-xs' : 'text-sm'} font-medium bg-green-100 text-green-800 mr-2`}>
+                            {item.category}
+                          </span>
+                          <span className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-500`}>{item.date}</span>
+                          {new Date(item.date) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
+                            <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded-md text-xs font-medium bg-red-100 text-red-800`}>
+                              NEW
+                            </span>
+                          )}
+                        </div>
+                        <Link to={`/sales-purchase/${item.id}`} className="block mt-2">
+                          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-medium text-gray-900 hover:text-green-600`}>
+                            {item.title}
+                          </h3>
+                        </Link>
+                        <div className={`mt-2 md:mt-3 flex items-center ${isMobile ? 'text-xs' : 'text-sm'} text-gray-500 flex-wrap`}>
+                          <span className="inline-flex items-center mr-3">
+                            <svg className="mr-1.5 h-3 w-3 md:h-4 md:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            {item.company}
+                          </span>
+                          <span className="inline-flex items-center">
+                            <svg className="mr-1.5 h-3 w-3 md:h-4 md:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            </svg>
+                            销售数量: {item.quantity || '未指定'}
+                          </span>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex-1 p-4">
-                      <div className="flex justify-between">
-                        <h3 className="text-base font-medium text-gray-900 mb-1 line-clamp-1">{item.title}</h3>
-                        <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">{item.date}</span>
-                      </div>
-                      
-                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                        {item.quantity && (
-                          <div className="flex items-center text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                            </svg>
-                            <span>{item.quantity}</span>
-                          </div>
-                        )}
-                        
-                        {item.price && (
-                          <div className="flex items-center text-red-600 font-medium">
-                            <svg className="h-4 w-4 mr-1 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>{item.price}</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="mt-3 flex justify-end">
-                        <Link
-                          to={`/announcement/${item.id}`}
-                          className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-800"
+                      <div className="hidden md:flex items-start ml-4">
+                        <Link 
+                          to={`/sales-purchase/${item.id}`} 
+                          className="bg-white border border-green-300 rounded-md p-2 text-green-500 hover:text-green-700 hover:border-green-700"
                         >
-                          详情
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                           </svg>
                         </Link>
                       </div>
+                    </div>
+                    <div className={`${isMobile ? 'mt-2' : 'mt-4'} flex justify-end md:hidden`}>
+                      <Link 
+                        to={`/sales-purchase/${item.id}`} 
+                        className="text-green-600 hover:text-green-800 text-xs md:text-sm font-medium flex items-center"
+                      >
+                        查看详情
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 md:h-4 md:w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </Link>
                     </div>
                   </div>
                 ))}
@@ -416,64 +441,51 @@ const Sales = () => {
             )}
           </div>
 
-          {/* 分页控件 */}
+          {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white px-6 py-4 border-t border-gray-200 flex justify-center">
-              <nav className="flex items-center">
-                <button
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === 1
-                      ? 'text-gray-300 cursor-not-allowed'
-                      : 'text-gray-500 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="sr-only">上一页</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                
-                {Array.from({ length: Math.min(5, totalPages) }).map((_, index) => {
-                  const pageNum = currentPage <= 3
-                    ? index + 1
-                    : currentPage >= totalPages - 2
-                      ? totalPages - 4 + index
-                      : currentPage - 2 + index;
-                      
-                  if (pageNum <= 0 || pageNum > totalPages) return null;
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
-                        currentPage === pageNum
-                          ? 'z-10 border-green-500 bg-green-50 text-green-600'
-                          : 'text-gray-500 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-                
-                <button
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === totalPages
-                      ? 'text-gray-300 cursor-not-allowed'
-                      : 'text-gray-500 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="sr-only">下一页</span>
-                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </nav>
+            <div className="bg-white px-4 md:px-6 py-3 md:py-4 border-t border-gray-200">
+              <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'items-center justify-between'}`}>
+                <div className={`text-xs md:text-sm text-gray-500 ${isMobile ? 'text-center' : ''}`}>
+                  显示 {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredData.length)} 条，共 {filteredData.length} 条结果
+                </div>
+                <div className={`flex ${isMobile ? 'justify-center' : ''} space-x-1`}>
+                  <button 
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className={`px-2 md:px-3 py-1 border border-gray-300 rounded-md text-xs md:text-sm font-medium ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 bg-white hover:bg-gray-50'}`}
+                  >
+                    上一页
+                  </button>
+                  {Array.from({ length: Math.min(totalPages, isMobile ? 3 : 5) }, (_, i) => {
+                    let pageNumber;
+                    if (totalPages <= (isMobile ? 3 : 5)) {
+                      pageNumber = i + 1;
+                    } else if (currentPage <= (isMobile ? 2 : 3)) {
+                      pageNumber = i + 1;
+                    } else if (currentPage >= totalPages - (isMobile ? 1 : 2)) {
+                      pageNumber = totalPages - (isMobile ? 2 : 4) + i;
+                    } else {
+                      pageNumber = currentPage - (isMobile ? 1 : 2) + i;
+                    }
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={`px-2 md:px-3 py-1 border border-gray-300 rounded-md text-xs md:text-sm font-medium ${currentPage === pageNumber ? 'text-white bg-green-600 hover:bg-green-700' : 'text-gray-700 bg-white hover:bg-gray-50'}`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`px-2 md:px-3 py-1 border border-gray-300 rounded-md text-xs md:text-sm font-medium ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 bg-white hover:bg-gray-50'}`}
+                  >
+                    下一页
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

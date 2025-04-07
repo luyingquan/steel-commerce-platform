@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const Header = () => {
+const Header = ({ isMobile }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('/');
   const location = useLocation();
@@ -24,6 +24,11 @@ const Header = () => {
       setActiveLink(path);
     }
   }, [location]);
+
+  // 当路由变化时关闭菜单
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -49,7 +54,7 @@ const Header = () => {
                 alt="沙钢云商Logo" 
                 className="h-8 w-8 mr-2" 
               />
-              <span className="text-2xl font-bold text-red-600">沙钢云商</span>
+              <span className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-red-600`}>沙钢云商</span>
             </Link>
           </div>
 
@@ -116,13 +121,13 @@ const Header = () => {
       </div>
 
       {/* Mobile menu, show/hide based on menu state */}
-      <div className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden`}>
+      <div className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden fixed inset-0 bg-white z-40 pt-16`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           {navItems.map((item) => (
             <Link 
               key={item.path}
               to={item.path} 
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              className={`block px-3 py-3 rounded-md text-base font-medium ${
                 activeLink === item.path 
                   ? 'bg-red-50 text-red-600' 
                   : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
@@ -135,12 +140,12 @@ const Header = () => {
         </div>
         <div className="pt-4 pb-3 border-t border-gray-200">
           <div className="flex items-center justify-between px-4">
-            <div className="bg-red-600 text-white px-4 py-2 rounded-md text-sm">
+            <div className="bg-red-600 text-white px-4 py-3 rounded-md text-base">
               <Link to="/register" className="mr-2" onClick={() => setIsMenuOpen(false)}>注册</Link>
               <span>/</span>
               <Link to="/login" className="ml-2" onClick={() => setIsMenuOpen(false)}>登录</Link>
             </div>
-            <div className="text-gray-700 text-xs text-right">
+            <div className="text-gray-700 text-sm text-right">
               <div>客服电话</div>
               <div className="font-semibold">0512-35012101</div>
             </div>
